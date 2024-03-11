@@ -37,7 +37,16 @@ if ($Tb && ($_GET['rowid']??null)) {
 if ($HC->has('rowid')) {
 	$DB = $In->DB();
 
-	echo '<h1><a href="' .$HC->without('rowid') .'">&lt;--</a> Editing record <a href="#">' .H($Rw->namePretty()) .'</a> of table <a href="' .$HC .'">' .H($Tb->namePretty()) .'</a> in <a href="' .$HC .'">' .H($In->namePretty()) .'</a></h1>';
+	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+		$DB->beginTransaction();
+		foreach ($_POST['field'] as $field => $value)
+			$DB->queryFetchAll('UPDATE ' .$DB->e($Tb->name()) .' SET ' .$DB->e($field) .' = ? WHERE rowid = ?', [$value, $Rw->rowid()]);
+		$DB->commit();
+		header('Location: ?' .$HC->without('rowid')->toQueryString());
+		http_response_code(303);
+	}
+
+	echo '<h1><a href="' .$HC->without('rowid') .'">&lt;--</a> Editing record <a href="#">' .H($Rw->namePretty()) .'</a> of table <a href="' .$HC->without('rowid') .'">' .H($Tb->namePretty()) .'</a> in <a href="' .$HC->without('rowid', 'table') .'">' .H($In->namePretty()) .'</a></h1>';
 
 	$Rnd = new DataRowEditorRenderer();
 	$Rnd->setHC($HC);
