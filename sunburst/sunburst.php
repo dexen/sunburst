@@ -43,7 +43,7 @@ if ($HC->has('db')) {
 		$rcd['num_rows'] = $DB->queryFetchOne('SELECT COUNT(*) AS count FROM ' .$DB->e($rcd['name']))['count'];
 		echo '<tr>
 			<td>' .H($rcd['type']) .':</td>
-			<td><a href="' .$HC('table', $rcd['name']) .'">' .H($rcd['name']) .'</a></td>
+			<td><a href="' .$HC($rcd['type'], $rcd['name']) .'">' .H($rcd['name']) .'</a></td>
 			<td class="numeric">' .H($rcd['num_rows']) .'</td>
 		</tr>'; }
 	echo '</tbody></table>';
