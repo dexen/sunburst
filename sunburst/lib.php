@@ -53,10 +53,11 @@ class HCtx {
 		return array_key_exists($key, $this->a);
 	}
 
-	function without($key)
+	function without(...$keys)
 	{
 		$Ret = clone $this;
-		unset($Ret->a[$key]);
+		foreach ($keys as $key)
+			unset($Ret->a[$key]);
 		return $Ret;
 	}
 
