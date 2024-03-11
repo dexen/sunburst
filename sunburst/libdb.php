@@ -1,5 +1,24 @@
 <?php
 
+class SQLiteIndex
+	implements HCtxProvider
+{
+	protected $In;
+	protected $name;
+
+	function __construct(SQLiteInstance $In, string $name)
+	{
+		$this->In = $In;
+		$this->name = $name;
+	}
+
+	function namePretty() { return $this->name; }
+
+	function name() { return $this->name; }
+
+	function hctxSelector() : string { return $this->name; }
+}
+
 class SQLiteQuery
 	implements HCtxProvider
 {

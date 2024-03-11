@@ -40,6 +40,72 @@ class DataRowEditorRenderer extends Renderer
 	}
 }
 
+class DataROTableRenderer extends Renderer
+{
+	protected $Tb;
+	protected $a;
+
+	function setTable(SQLiteTable $Tb) { $this->Tb = $Tb; }
+	function setRecords(array $a) { $this->a = $a; }
+
+	function H() : string {
+		$ret = '';
+		$HC = $this->HC;
+
+		$ret .= '<table class="records-listing">';
+		$ret .= '<thead>' .$this->headerRowH() .'</thead>';
+		$ret .= '<tbody>';
+
+		foreach ($this->a as $rcd) {
+			$ret .= '<tr>';
+			if (array_key_exists('rowid', $rcd))
+				$ret .= '<th><a href="' .$HC('rowid', $rcd['rowid']) .'">edit...</a></th>';
+			foreach ($rcd as $k => $v)
+				$ret .= $this->fieldH($rcd, $k);
+			$ret .= '</tr>';
+		}
+		$ret .= '</tbody></table>';
+		return $ret;
+	}
+
+	protected
+	function fieldH(array $rcd, $key) : string {
+		if (is_int($key))
+			return '';
+		if ($key === 'rowid')
+			return '';
+		if ($rcd[$key] === null)
+			$H = '<em><code>NULL</code></em>';
+		else if (is_string($rcd[$key]) && (strlen($rcd[$key]) > 255))
+			$H = H(substr($rcd[$key], 0, 255) .'...');
+		else
+			$H = H($rcd[$key]);
+		return '<td>' .$H .'</td>';
+	}
+
+	protected
+	function headerRowH()
+	{
+		$ret = '';
+		$ret .= '<tr>';
+
+		foreach ($this->a as $rcd) {
+			if (array_key_exists('rowid', $rcd))
+				$ret .= '<th>#</th>';
+			foreach ($rcd as $k => $v)
+				if (is_int($k))
+					;
+				else if ($k === 'rowid')
+					;
+				else
+					$ret .= '<th>' .H($k) .'</th>';
+			break;
+		}
+		$ret .= '</tr>';
+		return $ret;
+	}
+}
+
 class DataTableRender extends Renderer
 {
 	protected $Tb;

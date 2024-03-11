@@ -38,6 +38,11 @@ if ($Tb && ($_GET['rowid']??null)) {
 	$Rw = new SQLiteRow($Tb, $_GET['rowid']);
 	$HC = $HC->with('rowid', $Rw);
 }
+if ($In && ($_GET['index']??null)) {
+	$Id = new SQLiteIndex($In, $_GET['index']);
+	$HC = $HC->with('index', $Id); }
+else
+	$Id = null;
 
 if ($HC->has('rowid')) {
 	$DB = $In->DB();
@@ -61,6 +66,17 @@ if ($HC->has('rowid')) {
 	$Rnd->setHC($HC);
 	$Rnd->setRow($Rw);
 	$Rnd->setRecord($a = $DB->queryFetchOne('SELECT rowid, * FROM ' .$DB->e($Tb->name()). ' WHERE rowid = ?', [$Rw->rowid()]));
+	echo $Rnd->H();
+}
+else if ($HC->has('index')) {
+	$DB = $In->DB();
+
+	echo '<h1><a href="' .$HC->without('table') .'">&lt;--</a> Inspecting index <a href="' .$HC .'">' .H($Id->namePretty()) .'</a> on table <a href="' .$HC->without('index') .'">' .H($Tb->namePretty()) .'</a> in <a href="' .$HC->without('index', 'table') .'">' .H($In->namePretty()) .'</a></h1>';
+
+	$Rnd = new DataROTableRenderer();
+	$Rnd->setHC($HC);
+	$Rnd->setTable($Tb);
+	$Rnd->setRecords($DB->queryFetchAll('SELECT * FROM pragma_index_xinfo(?)', [$Id->name()]));
 	echo $Rnd->H();
 }
 else if ($HC->has('table')) {
@@ -120,7 +136,8 @@ else if ($HC->has('db')) {
 			continue;
 		echo '<tr>
 			<td>' .H($rcd['type']) .':</td>
-			<td><a href="' .$HC($rcd['type'], $rcd['name']) .'">' .H($rcd['name']) .'</a></td>
+			<td><a href="' .$HC('table', $rcd['tbl_name'], $rcd['type'], $rcd['name']) .'">' .H($rcd['name']) .'</a></td>
+			<td><a href="' .$HC('table', $rcd['tbl_name']) .'">@' .H($rcd['tbl_name']) .'</a></td>
 		</tr>'; }
 	echo '</tbody></table>';
 
