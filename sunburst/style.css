@@ -20,3 +20,8 @@ td.numeric {
 	text-align: right;
 	font-family: monospace;
 }
+
+.action-button-main {
+	width: 100%;
+	min-height: 4ex;
+}

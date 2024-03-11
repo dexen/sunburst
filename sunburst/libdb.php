@@ -1,5 +1,23 @@
 <?php
 
+class SQLiteRow
+	implements HCtxProvider
+{
+	protected $Tb;
+	protected $rowid;
+
+	function __construct(SQLiteTable $Tb, int $rowid)
+	{
+		$this->Tb = $Tb;
+		$this->rowid = $rowid;
+	}
+	function hctxSelector() : string { return $this->rowid; }
+
+	function namePretty() { return '#' .$this->rowid; }
+
+	function rowid() { return $this->rowid; }
+}
+
 class SQLiteTable
 	implements HCtxProvider
 {

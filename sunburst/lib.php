@@ -26,6 +26,8 @@ class HCtx {
 		foreach ($this->a as $key => $value) {
 			if (is_string($value))
 				$selector = $value;
+			else if (is_int($value))
+				$selector = $value;
 			else if ($value instanceof HCtxProvider)
 				$selector = $value->hctxSelector();
 			else

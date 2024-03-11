@@ -1,6 +1,44 @@
 <?php
 
-class DataTableRender
+abstract class Renderer
+{
+	protected $HC;
+
+	function setHC(HCtx $HC) { $this->HC = $HC; }
+
+	abstract
+	function H() : string;
+}
+
+class DataRowEditorRenderer extends Renderer
+{
+	protected $Rw;
+	protected $rcd;
+
+	function setRow(SQLiteRow $Rw) { $this->Rw = $Rw; }
+
+	function setRecord(array $rcd) { $this->rcd = $rcd; }
+
+	function H() : string {
+		$ret = '';
+
+		$ret .= '<form method="post" action="' .$this->HC .'">';
+			foreach ($this->rcd as $k => $v) {
+				if (is_int($k))
+					;
+				else if ($k === 'rowid')
+					$ret .= '<p><label>rowid: <code>' .H($this->rcd[$k]) .'</code></label></p>';
+				else
+					$ret .= '<p><label>' .H($k) .': <input name="field[' .H($k) .']" value="' .H($this->rcd[$k]) .'"/></label></p>';
+			}
+			$ret .= '<button type="submit" name="action" value="save" class="action-button-main">save</button>';
+		$ret .= '</form>';
+
+		return $ret;
+	}
+}
+
+class DataTableRender extends Renderer
 {
 	protected $Tb;
 	protected $a;
@@ -10,6 +48,7 @@ class DataTableRender
 
 	function H() : string {
 		$ret = '';
+		$HC = $this->HC;
 
 		$ret .= '<table class="records-listing">';
 		$ret .= '<thead>' .$this->headerRowH() .'</thead>';
@@ -17,6 +56,7 @@ class DataTableRender
 
 		foreach ($this->a as $rcd) {
 			$ret .= '<tr>';
+			$ret .= '<th><a href="' .$HC('rowid', $rcd['rowid']) .'">edit...</a></th>';
 			foreach ($rcd as $k => $v)
 				$ret .= $this->fieldH($rcd, $k);
 			$ret .= '</tr>';
@@ -28,6 +68,8 @@ class DataTableRender
 	protected
 	function fieldH(array $rcd, $key) : string {
 		if (is_int($key))
+			return '';
+		if ($key === 'rowid')
 			return '';
 		if ($rcd[$key] === null)
 			$H = '<em><code>NULL</code></em>';
@@ -43,9 +85,13 @@ class DataTableRender
 	{
 		$ret = '';
 		$ret .= '<tr>';
+		$ret .= '<th>#</th>';
+
 		foreach ($this->a as $rcd) {
 			foreach ($rcd as $k => $v)
 				if (is_int($k))
+					;
+				else if ($k === 'rowid')
 					;
 				else
 					$ret .= '<th>' .H($k) .'</th>';

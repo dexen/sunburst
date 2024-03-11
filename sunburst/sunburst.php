@@ -26,17 +26,34 @@ else
 
 if ($In && ($_GET['table']??null)) {
 	$Tb = new SQLiteTable($In, $_GET['table']);
-	$HC = $HC->with('table', $Tb);
+	$HC = $HC->with('table', $Tb); }
+else
+	$Tb = null;
+if ($Tb && ($_GET['rowid']??null)) {
+	$Rw = new SQLiteRow($Tb, $_GET['rowid']);
+	$HC = $HC->with('rowid', $Rw);
 }
 
-if ($HC->has('table')) {
+if ($HC->has('rowid')) {
+	$DB = $In->DB();
+
+	echo '<h1><a href="' .$HC->without('rowid') .'">&lt;--</a> Editing record <a href="#">' .H($Rw->namePretty()) .'</a> of table <a href="' .$HC .'">' .H($Tb->namePretty()) .'</a> in <a href="' .$HC .'">' .H($In->namePretty()) .'</a></h1>';
+
+	$Rnd = new DataRowEditorRenderer();
+	$Rnd->setHC($HC);
+	$Rnd->setRow($Rw);
+	$Rnd->setRecord($a = $DB->queryFetchOne('SELECT rowid, * FROM ' .$DB->e($Tb->name()). ' WHERE rowid = ?', [$Rw->rowid()]));
+	echo $Rnd->H();
+}
+else if ($HC->has('table')) {
 	$DB = $In->DB();
 
 	echo '<h1><a href="' .$HC->without('table') .'">&lt;--</a> Browsing table <a href="' .$HC .'">' .H($Tb->namePretty()) .'</a> in <a href="' .$HC .'">' .H($In->namePretty()) .'</a></h1>';
 
 	$Rnd = new DataTableRender();
+	$Rnd->setHC($HC);
 	$Rnd->setTable($Tb);
-	$Rnd->setRecords($a = $DB->queryFetchAll('SELECT * FROM ' .$DB->e($Tb->name())));
+	$Rnd->setRecords($a = $DB->queryFetchAll('SELECT rowid, * FROM ' .$DB->e($Tb->name())));
 	echo $Rnd->H();
 }
 else if ($HC->has('db')) {
