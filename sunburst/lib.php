@@ -21,7 +21,7 @@ class HCtx {
 
 	function __construct() {}
 
-	function __toString() : string {
+	function toQueryString() : string {
 		$a = [];
 		foreach ($this->a as $key => $value) {
 			if (is_string($value))
@@ -34,7 +34,11 @@ class HCtx {
 				throw new \Exception(sprintf('unhandled value type "%s" for key "%s"', gettype($value), $key));
 			$a[$key] = $selector; }
 		$q = http_build_query($a);
-		return H('?' .$q);
+		return '?' .$q;
+	}
+
+	function __toString() : string {
+		return H($this->toQueryString());
 	}
 
 	function with(string $key, $value) : self
