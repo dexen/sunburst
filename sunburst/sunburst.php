@@ -32,17 +32,31 @@ if ($HC->has('db')) {
 
 	echo '<h1><a href="' .$HC->without('db') .'">&lt;--</a> Browsing <a href="' .$HC .'">' .H($In->namePretty()) .'</a></h1>';
 
-	$a = $DB->queryFetchAll('SELECT * FROM sqlite_schema WHERE type = \'table\'');
+	$a = $DB->queryFetchAll('SELECT * FROM sqlite_schema ORDER BY name');
 	if (empty($a))
 		echo '<p>No tables found in database "<code>' .H($In->namePretty()) .'</code>".</p>';
 
 	echo '<table class="records-listing"><tbody>';
 	foreach ($a as $rcd) {
+		if ($rcd['type'] === 'index')
+			continue;
 		$rcd['num_rows'] = $DB->queryFetchOne('SELECT COUNT(*) AS count FROM ' .$DB->e($rcd['name']))['count'];
 		echo '<tr>
-			<td>table:</td>
+			<td>' .H($rcd['type']) .':</td>
 			<td><a href="' .$HC('table', $rcd['name']) .'">' .H($rcd['name']) .'</a></td>
 			<td class="numeric">' .H($rcd['num_rows']) .'</td>
+		</tr>'; }
+	echo '</tbody></table>';
+
+	echo '<hr>';
+
+	echo '<table class="records-listing"><tbody>';
+	foreach ($a as $rcd) {
+		if ($rcd['type'] !== 'index')
+			continue;
+		echo '<tr>
+			<td>' .H($rcd['type']) .':</td>
+			<td><a href="' .$HC('table', $rcd['name']) .'">' .H($rcd['name']) .'</a></td>
 		</tr>'; }
 	echo '</tbody></table>';
 }
