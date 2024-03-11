@@ -89,6 +89,20 @@ else if ($HC->has('table')) {
 	$Rnd->setTable($Tb);
 	$Rnd->setRecords($a = $DB->queryFetchAll('SELECT rowid, * FROM ' .$DB->e($Tb->name())));
 	echo $Rnd->H();
+	echo '<hr>';
+	$a = $DB->queryFetchAll('SELECT * FROM sqlite_schema WHERE tbl_name = ?', [$Tb->name()]);
+	echo '<table class="records-listing"><tbody>';
+	foreach ($a as $rcd) {
+		if ($rcd['type'] !== 'index')
+			continue;
+		$aa = $DB->queryFetchAll('SELECT * FROM pragma_index_xinfo(?)', [$rcd['name']]);
+		$aaa = array_filter(array_column($aa, 'name'), fn($v)=>!is_null($v));
+		echo '<tr>
+			<td>' .H($rcd['type']) .':</td>
+			<td><a href="' .$HC('table', $rcd['tbl_name'], $rcd['type'], $rcd['name']) .'">' .H($rcd['name']) .'</a></td>
+			<td>' .H(implode(', ', $aaa)) .'</td>
+		</tr>'; }
+	echo '</tbody></table>';
 }
 else if ($HC->has('query')) {
 	echo '<h1>Editing freehand query in <a href="' .$HC->without('query') .'">' .H($In->namePretty()) .'</a></h1>';
@@ -134,9 +148,12 @@ else if ($HC->has('db')) {
 	foreach ($a as $rcd) {
 		if ($rcd['type'] !== 'index')
 			continue;
+		$aa = $DB->queryFetchAll('SELECT * FROM pragma_index_xinfo(?)', [$rcd['name']]);
+		$aaa = array_filter(array_column($aa, 'name'), fn($v)=>!is_null($v));
 		echo '<tr>
 			<td>' .H($rcd['type']) .':</td>
 			<td><a href="' .$HC('table', $rcd['tbl_name'], $rcd['type'], $rcd['name']) .'">' .H($rcd['name']) .'</a></td>
+			<td>' .H(implode(', ', $aaa)) .'</td>
 			<td><a href="' .$HC('table', $rcd['tbl_name']) .'">@' .H($rcd['tbl_name']) .'</a></td>
 		</tr>'; }
 	echo '</tbody></table>';
