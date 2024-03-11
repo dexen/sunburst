@@ -120,7 +120,7 @@ else if ($HC->has('db')) {
 			continue;
 		echo '<tr>
 			<td>' .H($rcd['type']) .':</td>
-			<td><a href="' .$HC('table', $rcd['name']) .'">' .H($rcd['name']) .'</a></td>
+			<td><a href="' .$HC($rcd['type'], $rcd['name']) .'">' .H($rcd['name']) .'</a></td>
 		</tr>'; }
 	echo '</tbody></table>';
 
