@@ -87,7 +87,7 @@ else if ($HC->has('table')) {
 	$Rnd = new DataTableRender();
 	$Rnd->setHC($HC);
 	$Rnd->setTable($Tb);
-	$Rnd->setRecords($a = $DB->queryFetchAll('SELECT rowid, * FROM ' .$DB->e($Tb->name())));
+	$Rnd->setRecords($DB->queryFetchAll('SELECT rowid AS rowid, * FROM ' .$DB->e($Tb->name())));
 	echo $Rnd->H();
 	echo '<hr>';
 	$a = $DB->queryFetchAll('SELECT * FROM sqlite_schema WHERE tbl_name = ?', [$Tb->name()]);
