@@ -41,10 +41,12 @@ class HCtx {
 		return H($this->toQueryString());
 	}
 
-	function with(string $key, $value) : self
+	function with(...$a) : self
 	{
 		$Ret = clone $this;
-		$Ret->a[$key] = $value;
+		while ($a) {
+			$key = array_shift($a);
+			$Ret->a[$key] = array_shift($a); }
 		return $Ret;
 	}
 
