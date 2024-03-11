@@ -24,6 +24,11 @@ if ($_GET['db']??null) {
 else
 	$In = null;
 
+if ($In && ($_GET['query']??null)) {
+	$Qr = new SQLiteQuery($In, $_POST['sql']);
+	$HC = $HC->with('query', $Qr);
+}
+
 if ($In && ($_GET['table']??null)) {
 	$Tb = new SQLiteTable($In, $_GET['table']);
 	$HC = $HC->with('table', $Tb); }
@@ -61,12 +66,29 @@ if ($HC->has('rowid')) {
 else if ($HC->has('table')) {
 	$DB = $In->DB();
 
-	echo '<h1><a href="' .$HC->without('table') .'">&lt;--</a> Browsing table <a href="' .$HC .'">' .H($Tb->namePretty()) .'</a> in <a href="' .$HC .'">' .H($In->namePretty()) .'</a></h1>';
+	echo '<h1><a href="' .$HC->without('table') .'">&lt;--</a> Browsing table <a href="' .$HC .'">' .H($Tb->namePretty()) .'</a> in <a href="' .$HC->without('table') .'">' .H($In->namePretty()) .'</a></h1>';
 
 	$Rnd = new DataTableRender();
 	$Rnd->setHC($HC);
 	$Rnd->setTable($Tb);
 	$Rnd->setRecords($a = $DB->queryFetchAll('SELECT rowid, * FROM ' .$DB->e($Tb->name())));
+	echo $Rnd->H();
+}
+else if ($HC->has('query')) {
+	echo '<h1>Editing freehand query in <a href="' .$HC->without('query') .'">' .H($In->namePretty()) .'</a></h1>';
+
+	echo '<form method="post" action="' .$HC->with('query', 'freehand') .'">';
+		$sql = $Qr->sql();
+		$DB = $In->DB();
+
+		$rows = max(5, count(explode("\n", $sql)));
+		echo '<textarea name="sql" style="width: 100%" rows="' .H($rows) .'">' .H($sql) .'</textarea>';
+		echo '<button type="submit" name="action" value="execute-sql" class="action-button-main">execute SQL</button>';
+	echo '</form>';
+
+	$Rnd = new DataTableRender();
+	$Rnd->setRecords($DB->queryFetchAll($sql));
+	$Rnd->setHC($HC);
 	echo $Rnd->H();
 }
 else if ($HC->has('db')) {
@@ -101,6 +123,15 @@ else if ($HC->has('db')) {
 			<td><a href="' .$HC('table', $rcd['name']) .'">' .H($rcd['name']) .'</a></td>
 		</tr>'; }
 	echo '</tbody></table>';
+
+	echo '<hr>';
+
+	echo '<form method="post" action="' .$HC->with('query', 'freehand') .'">';
+		$sql = $_POST['sql'] ?? '';
+		$rows = max(5, count(explode("\n", $sql)));
+		echo '<textarea name="sql" style="width: 100%" rows="' .H($rows) .'">' .H($sql) .'</textarea>';
+		echo '<button type="submit" name="action" value="execute-sql" class="action-button-main">execute SQL</button>';
+	echo '</form>';
 }
 else {
 	echo '<h1>Welcome to SunBurst</h1>';

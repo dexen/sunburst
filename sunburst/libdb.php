@@ -1,5 +1,22 @@
 <?php
 
+class SQLiteQuery
+	implements HCtxProvider
+{
+	protected $In;
+	protected $sql;
+
+	function __construct(SQLiteInstance $In, string $sql)
+	{
+		$this->In = $In;
+		$this->sql = $sql;
+	}
+
+	function sql() : string { return $this->sql; }
+
+	function hctxSelector() : string { return 'freehand'; }
+}
+
 class SQLiteRow
 	implements HCtxProvider
 {

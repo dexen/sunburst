@@ -58,7 +58,8 @@ class DataTableRender extends Renderer
 
 		foreach ($this->a as $rcd) {
 			$ret .= '<tr>';
-			$ret .= '<th><a href="' .$HC('rowid', $rcd['rowid']) .'">edit...</a></th>';
+			if (array_key_exists('rowid', $rcd))
+				$ret .= '<th><a href="' .$HC('rowid', $rcd['rowid']) .'">edit...</a></th>';
 			foreach ($rcd as $k => $v)
 				$ret .= $this->fieldH($rcd, $k);
 			$ret .= '</tr>';
@@ -87,9 +88,10 @@ class DataTableRender extends Renderer
 	{
 		$ret = '';
 		$ret .= '<tr>';
-		$ret .= '<th>#</th>';
 
 		foreach ($this->a as $rcd) {
+			if (array_key_exists('rowid', $rcd))
+				$ret .= '<th>#</th>';
 			foreach ($rcd as $k => $v)
 				if (is_int($k))
 					;
