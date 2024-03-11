@@ -60,7 +60,7 @@ if ($HC->has('db')) {
 		</tr>'; }
 	echo '</tbody></table>';
 }
-if (empty($_GET['db'])) {
+else {
 	echo '<h1>Welcome to SunBurst</h1>';
 	$a = glob($pattern='*.sqlite', GLOB_MARK);
 	if (empty($a))
