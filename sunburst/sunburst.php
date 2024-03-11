@@ -23,7 +23,7 @@ if ($_GET['db']??null) {
 else
 	$In = null;
 
-if ($_GET['table']??null) {
+if ($In && ($_GET['table']??null)) {
 	$Tb = new SQLiteTable($In, $_GET['table']);
 	$HC = $HC->with('table', $Tb);
 }
