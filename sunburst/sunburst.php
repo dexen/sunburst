@@ -3,14 +3,14 @@
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', true);
 
-require 'sunburst/lib.php';
-require 'sunburst/libdb.php';
+require __DIR__ .'/' .'lib.php';
+require __DIR__ .'/' .'libdb.php';
 
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<style><?= Hcdata(file_get_contents('sunburst/style.css')) ?></style>
+<style><?= Hcdata(file_get_contents(__DIR__ .'/' .'style.css')) ?></style>
 </head>
 <body>
 <?php
