@@ -16,6 +16,14 @@ table.records-listing > thead > tr > th {
 	background: #eff;
 }
 
+table.records-listing > tbody > tr:nth-child(even) {
+	background: #eee;
+}
+
+table.records-listing > tbody > tr:hover {
+	background: #ddd;
+}
+
 td.numeric {
 	text-align: right;
 	font-family: monospace;
