@@ -25,9 +25,28 @@ else
 
 if ($_GET['table']??null) {
 	$Tb = new SQLiteTable($In, $_GET['table']);
+	$HC = $HC->with('table', $Tb);
 }
 
-if ($HC->has('db')) {
+if ($HC->has('table')) {
+	$DB = $In->DB();
+
+	echo '<h1><a href="' .$HC->without('db') .'">&lt;--</a> Browsing table <a href="' .$HC .'">' .H($Tb->namePretty()) .'</a></h1>';
+
+	$a = $DB->queryFetchAll('SELECT * FROM ' .$DB->e($Tb->name()));
+	echo '<table><tbody>';
+	foreach ($a as $rcd) {
+		echo '<tr>';
+			foreach ($rcd as $k => $v) {
+				if (is_int($k))
+					continue;
+				echo '<td>', H($v), '</td>';
+			}
+		echo '</tr>';
+	}
+	echo '</tbody></table>';
+}
+else if ($HC->has('db')) {
 	$DB = $In->DB();
 
 	echo '<h1><a href="' .$HC->without('db') .'">&lt;--</a> Browsing <a href="' .$HC .'">' .H($In->namePretty()) .'</a></h1>';

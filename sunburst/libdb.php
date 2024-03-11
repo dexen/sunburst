@@ -1,6 +1,8 @@
 <?php
 
-class SQLiteTable {
+class SQLiteTable
+	implements HCtxProvider
+{
 	protected $In;
 	protected $name;
 
@@ -11,10 +13,15 @@ class SQLiteTable {
 	}
 
 	function namePretty() { return $this->name; }
+
+	function name() { return $this->name; }
+
+	function hctxSelector() : string { return $this->name; }
 }
 
 class SQLiteInstance
-	implements HCtxProvider {
+	implements HCtxProvider
+{
 	protected $pn;
 	protected $DB;
 
