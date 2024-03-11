@@ -1,0 +1,15 @@
+table.records-listing {
+	border: 1px solid gray;
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+
+table.records-listing > tbody > tr > td {
+	padding: .33ex 1.66ex;
+	border: 1px solid gray;
+}
+
+td.numeric {
+	text-align: right;
+	font-family: monospace;
+}

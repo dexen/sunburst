@@ -1,0 +1,88 @@
+<?php
+
+class SQLiteTable {
+	protected $In;
+	protected $name;
+
+	function __construct(SQLiteInstance $In, string $name)
+	{
+		$this->In = $In;
+		$this->name = $name;
+	}
+
+	function namePretty() { return $this->name; }
+}
+
+class SQLiteInstance
+	implements HCtxProvider {
+	protected $pn;
+	protected $DB;
+
+	function __construct(string $pn)
+	{
+		$this->pn = $pn;
+		$this->DB = new SQLiteDB($pn);
+	}
+
+	static
+	function filePathnameSafety(string $unsafe_pathname) : string
+	{
+		$filename = basename($unsafe_pathname);
+		if ($filename !== $unsafe_pathname)
+			throw new \Exception('path components not supported at present');
+
+		$expected = '.sqlite';
+		if (strncmp(strrev($filename), strrev($expected), strlen($expected)) !== 0)
+			throw new \Exception(sprintf('expected "%s" extension not found', $expected));
+
+		return $filename;
+	}
+
+	function namePretty() { return basename($this->pn); }
+
+	function pathname() { return $this->pn; }
+
+	function DB() { return $this->DB; }
+
+	function hctxSelector() : string { return $this->pathname(); }
+}
+
+class SQLiteDB extends DB {
+	function __construct(string $pn)
+	{
+		parent::__construct($dsn=sprintf('sqlite:%s', $pn), null, null, $options=[
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+		]);
+	}
+
+	function e(string $unsafe_name) : string {
+		if (strpos($unsafe_name, "\x00") !== false)
+			throw new \Exception('unsupported: NUL');
+		$washed_name = str_replace('"', '""', $unsafe_name);
+		return '"' .$washed_name .'"';
+	}
+}
+
+class DB extends PDO {
+	function queryFetchAll(string $sql, array $params=[])
+	{
+		if ($params === [])
+			$St = $this->query($sql);
+		else {
+			$St = $this->prepare($sql);
+			$St->execute($params); }
+		return $St->fetchAll();
+	}
+
+	function queryFetchOne(string $sql, array $params=[])
+	{
+		$a = $this->queryFetchAll($sql, $params);
+		switch (count($a)) {
+		case 1:
+			return array_shift($a);
+		case 0:
+			throw new \Exceptions('no matching records found, expected exactly least one');
+		default:
+			throw new \Exceptions('multiple matching records found, expected exactly least one'); }
+	}
+}
