@@ -29,7 +29,9 @@ class DataRowEditorRenderer extends Renderer
 				else if ($k === 'rowid')
 					$ret .= '<p><label>rowid: <code>' .H($this->rcd[$k]) .'</code></label></p>';
 				else
-					$ret .= '<p><label>' .H($k) .': <input name="field[' .H($k) .']" value="' .H($this->rcd[$k]) .'"/></label></p>';
+					$ret .= '
+						<input type="hidden" name="orig_field[' .H($k) .']" value="' .H($this->rcd[$k]) .'"/>
+						<p><label>' .H($k) .': <input name="field[' .H($k) .']" value="' .H($this->rcd[$k]) .'"/></label></p>';
 			}
 			$ret .= '<button type="submit" name="action" value="save" class="action-button-main">save</button>';
 		$ret .= '</form>';

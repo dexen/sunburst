@@ -39,8 +39,12 @@ if ($HC->has('rowid')) {
 
 	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$DB->beginTransaction();
-		foreach ($_POST['field'] as $field => $value)
-			$DB->queryFetchAll('UPDATE ' .$DB->e($Tb->name()) .' SET ' .$DB->e($field) .' = ? WHERE rowid = ?', [$value, $Rw->rowid()]);
+		foreach ($_POST['field'] as $field => $value) {
+			$orig = $_POST['orig_field'][$field];
+			$a = $DB->queryFetchAll('SELECT rowid FROM ' .$DB->e($Tb->name()) .' WHERE ' .$DB->e($field) .' = ? AND rowid = ?', [$orig, $Rw->rowid()]);
+			if (empty($a))
+				throw new \Exception(sprintf('cannot save changes, field "%s" changed in the meantime', $field));
+			$DB->queryFetchAll('UPDATE ' .$DB->e($Tb->name()) .' SET ' .$DB->e($field) .' = ? WHERE rowid = ?', [$value, $Rw->rowid()]); }
 		$DB->commit();
 		header('Location: ?' .$HC->without('rowid')->toQueryString());
 		http_response_code(303);
