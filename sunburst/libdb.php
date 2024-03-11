@@ -88,8 +88,8 @@ class DB extends PDO {
 		case 1:
 			return array_shift($a);
 		case 0:
-			throw new \Exceptions('no matching records found, expected exactly least one');
+			throw new \Exception('no matching records found, expected exactly least one');
 		default:
-			throw new \Exceptions('multiple matching records found, expected exactly least one'); }
+			throw new \Exception('multiple matching records found, expected exactly least one'); }
 	}
 }
