@@ -105,8 +105,13 @@ class DataROTableRenderer extends Renderer
 			return '';
 		if ($rcd[$key] === null)
 			$H = '<em><code>NULL</code></em>';
-		else if (is_string($rcd[$key]) && (strlen($rcd[$key]) > 255))
-			$H = H(substr($rcd[$key], 0, 255) .'...');
+		else if (is_string($rcd[$key])) {
+			$orig = $rcd[$key];
+			$s = substr($orig, 0, 128);
+			$s = implode("\n", array_slice(explode("\n", $s), 0, 3));
+			if ($s !== $orig)
+				$s .= '...';
+			$H = H($s); }
 		else
 			$H = H($rcd[$key]);
 		return '<td>' .$H .'</td>';
@@ -186,8 +191,13 @@ class DataTableRender extends Renderer
 			return '';
 		if ($rcd[$key] === null)
 			$H = '<em><code>NULL</code></em>';
-		else if (is_string($rcd[$key]) && (strlen($rcd[$key]) > 255))
-			$H = H(substr($rcd[$key], 0, 255) .'...');
+		else if (is_string($rcd[$key])) {
+			$orig = $rcd[$key];
+			$s = substr($orig, 0, 128);
+			$s = implode("\n", array_slice(explode("\n", $s), 0, 3));
+			if ($s !== $orig)
+				$s .= '...';
+			$H = H($s); }
 		else
 			$H = H($rcd[$key]);
 		return '<td>' .$H .'</td>';
