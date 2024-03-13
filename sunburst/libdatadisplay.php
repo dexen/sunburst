@@ -150,7 +150,8 @@ class DataTableRender extends Renderer
 	function setRecords(array $a) { $this->a = $a; }
 	function setNav(TabularNavigator $Nav) { $this->Nav = $Nav; }
 
-	function H() : string {
+	protected
+	function navH() : string {
 		$ret = '';
 		$HC = $this->HC;
 
@@ -166,6 +167,14 @@ class DataTableRender extends Renderer
 
 		$ret .= '</fieldset>';
 		$ret .= '</form>';
+		return $ret;
+	}
+
+	function H() : string {
+		$ret = '';
+		$HC = $this->HC;
+
+		$ret .= $this->navH();
 
 		$ret .= '<table class="records-listing">';
 		$ret .= '<thead>' .$this->headerRowH() .'</thead>';
