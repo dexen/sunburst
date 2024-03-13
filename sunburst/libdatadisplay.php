@@ -33,6 +33,20 @@ class DataRowEditorRenderer extends Renderer
 
 	function setRecord(array $rcd) { $this->rcd = $rcd; }
 
+	protected
+	function textEditorShortH(string $k) : string {
+		return '<p><label>' .H($k) .': <input name="field[' .H($k) .']" value="' .H($this->rcd[$k]) .'" size="52"/></label></p>';
+	}
+
+	protected
+	function textEditorLongH(string $k) : string {
+		$v = $this->rcd[$k];
+		$nrows = max(3, count(explode("\n", $v))+1);
+		$nrows = min(10, $nrows);
+		return '<div><label>' .H($k) .':<br>
+			<textarea name="field[' .H($k) .']" style="width: 100%" rows="' .H($nrows) .'">' .H($v) .'</textarea></label></div>';
+	}
+
 	function H() : string {
 		$ret = '';
 
@@ -42,10 +56,13 @@ class DataRowEditorRenderer extends Renderer
 					;
 				else if ($k === 'rowid')
 					$ret .= '<p><label>rowid: <code>' .H($this->rcd[$k]) .'</code></label></p>';
-				else
+				else {
 					$ret .= '
-						<input type="hidden" name="orig_field[' .H($k) .']" value="' .H($this->rcd[$k]) .'"/>
-						<p><label>' .H($k) .': <input name="field[' .H($k) .']" value="' .H($this->rcd[$k]) .'"/></label></p>';
+						<input type="hidden" name="orig_field[' .H($k) .']" value="' .H($this->rcd[$k]) .'"/>';
+					if ((strlen($this->rcd[$k]) > 48) || (count(explode("\n", $this->rcd[$k]))>1))
+						$ret .= $this->textEditorLongH($k);
+					else
+						$ret .=$this->textEditorShortH($k); }
 			}
 			$ret .= '<button type="submit" name="action" value="save" class="action-button-main">save</button>';
 		$ret .= '</form>';
