@@ -104,10 +104,10 @@ else if ($HC->has('table')) {
 	else if ($ops === 'delete') {
 		$Nav->params = $Nav->sel;
 			# FIXME - check the "_checked" field name for naming conflicts
-		$Nav->query = 'SELECT rowid, 1 AS _checked, * FROM ' .$DB->e($Tb->name()) .' WHERE rowid IN (' .$DB->IMPROVEMETHODNAME($Nav->params) .')';
+		$Nav->query = 'SELECT rowid, 1 AS _checked, * FROM ' .$DB->e($Tb->name()) .' WHERE rowid IN (' .$DB->sqlParametersPlaceholders($Nav->params) .')';
 
 		$OpsNav = clone $Nav;
-		$OpsNav->query = 'DELETE FROM ' .$DB->e($Tb->name()) .' WHERE rowid IN (' .$DB->IMPROVEMETHODNAME($OpsNav->params) .') RETURNING rowid AS _deleted'; }
+		$OpsNav->query = 'DELETE FROM ' .$DB->e($Tb->name()) .' WHERE rowid IN (' .$DB->sqlParametersPlaceholders($OpsNav->params) .') RETURNING rowid AS _deleted'; }
 	else {
 		$Nav->params = ['nav_limit'=>$Nav->limit, 'nav_offset'=>$Nav->page*$Nav->limit];
 		$Nav->query = 'SELECT rowid, * FROM ' .$DB->e($Tb->name()) .' LIMIT :nav_limit OFFSET :nav_offset';

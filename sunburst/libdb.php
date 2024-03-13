@@ -166,7 +166,7 @@ class DB extends PDO {
 			throw new \Exception('multiple matching records found, expected exactly least one'); }
 	}
 
-	function IMPROVEMETHODNAME(array $a) : string
+	function sqlParametersPlaceholders(array $a) : string
 	{
 		$SAFETY = function(string $param_name) : string {
 			if (preg_match('^[a-zA-Z]+$', $param_names))
