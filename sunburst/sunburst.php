@@ -94,7 +94,7 @@ else if ($HC->has('table')) {
 	$Rnd->setHC($HC);
 	$Rnd->setTable($Tb);
 	$limit = 10;
-	$Rnd->setRecords($DB->queryFetchAll($Nav->query = 'SELECT rowid AS rowid, * FROM ' .$DB->e($Tb->name()) .' LIMIT ? OFFSET ?', [$Nav->limit, $Nav->page*$Nav->limit]));
+	$Rnd->setRecords($DB->queryFetchAll($Nav->query = 'SELECT rowid AS rowid, * FROM ' .$DB->e($Tb->name()) .' LIMIT :nav_limit OFFSET :nav_offset', ['nav_limit'=>$Nav->limit, 'nav_offset'=>$Nav->page*$Nav->limit]));
 	$Rnd->setNav($Nav);
 	echo $Rnd->H();
 	echo '<hr>';
