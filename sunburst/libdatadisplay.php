@@ -6,7 +6,7 @@ class TabularNavigator
 	public int $page;
 	public ?string $query=null;
 
-	function __construct(int $limit = 3, int $page = 0, string $query=null)
+	function __construct(int $limit = 10, int $page = 0, string $query=null)
 	{
 		$this->limit = $limit;
 		$this->page = $page;

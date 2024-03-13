@@ -86,7 +86,7 @@ else if ($HC->has('index')) {
 }
 else if ($HC->has('table')) {
 	$DB = $In->DB();
-	$Nav = new TabularNavigator(limit: $_GET['nav']['limit']??3, page: $_GET['nav']['page']??0);
+	$Nav = new TabularNavigator(limit: $_GET['nav']['limit']??10, page: $_GET['nav']['page']??0);
 
 	echo '<h1><a href="' .$HC->without('table') .'">&lt;--</a> Browsing table <a href="' .$HC .'">' .H($Tb->namePretty()) .'</a> in <a href="' .$HC->without('table') .'">' .H($In->namePretty()) .'</a></h1>';
 
