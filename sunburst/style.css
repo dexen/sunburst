@@ -8,7 +8,7 @@ table.records-listing {
 
 table.records-listing > * > tr > td,
 table.records-listing > * > tr > th {
-	padding: .33ex 1.66ex;
+	padding: .16ex .66ex;
 	border: 1px solid gray;
 }
 
