@@ -165,4 +165,22 @@ class DB extends PDO {
 		default:
 			throw new \Exception('multiple matching records found, expected exactly least one'); }
 	}
+
+	function IMPROVEMETHODNAME(array $a) : string
+	{
+		$SAFETY = function(string $param_name) : string {
+			if (preg_match('^[a-zA-Z]+$', $param_names))
+				return $param_name;
+			else
+				throw new \Exception(sprintf('unsupported parameter name format: "%s"', $param_name));
+		};
+
+		$ret = [];
+		foreach ($a as $k => $v)
+			if (is_int($k))
+				$ret[] = '?';
+			else
+				$ret[] = ':' .$SAFETY($k);
+		return implode(', ', $ret);
+	}
 }

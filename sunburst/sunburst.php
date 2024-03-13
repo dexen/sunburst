@@ -49,6 +49,8 @@ if ($In && ($_GET['index']??null)) {
 else
 	$Id = null;
 
+$ops = $_POST['ops']??null;
+
 if ($HC->has('rowid')) {
 	$DB = $In->DB();
 
@@ -86,15 +88,37 @@ else if ($HC->has('index')) {
 }
 else if ($HC->has('table')) {
 	$DB = $In->DB();
-	$Nav = new TabularNavigator(limit: $_GET['nav']['limit']??10, page: $_GET['nav']['page']??0);
+	$Rnd = new DataTableRender();
+	$Nav = new TabularNavigator(limit: $_GET['nav']['limit']??10, page: $_GET['nav']['page']??0,
+		sel: $_POST['sel']['rowid']??[] );
 
 	echo '<h1><a href="' .$HC->without('table') .'">&lt;--</a> Browsing table <a href="' .$HC .'">' .H($Tb->namePretty()) .'</a> in <a href="' .$HC->without('table') .'">' .H($In->namePretty()) .'</a></h1>';
 
-	$Rnd = new DataTableRender();
+	if ($ops === 'exec') {
+		$Nav->params = ['nav_limit'=>$Nav->limit, 'nav_offset'=>$Nav->page*$Nav->limit];
+		$Nav->query = 'SELECT rowid, * FROM ' .$DB->e($Tb->name()) .' LIMIT :nav_limit OFFSET :nav_offset';
+		$OpsNav = new TabularNavigator;
+		$OpsNav->query = $_POST['opsquery'];
+		$OpsNav->params = $_POST['sel']['rowid']??[];
+		$Rnd->setOpsRecords($DB->queryFetchAll($OpsNav->query, $OpsNav->params)); }
+	else if ($ops === 'delete') {
+		$Nav->params = $Nav->sel;
+			# FIXME - check the "_checked" field name for naming conflicts
+		$Nav->query = 'SELECT rowid, 1 AS _checked, * FROM ' .$DB->e($Tb->name()) .' WHERE rowid IN (' .$DB->IMPROVEMETHODNAME($Nav->params) .')';
+
+		$OpsNav = clone $Nav;
+		$OpsNav->query = 'DELETE FROM ' .$DB->e($Tb->name()) .' WHERE rowid IN (' .$DB->IMPROVEMETHODNAME($OpsNav->params) .') RETURNING rowid AS _deleted'; }
+	else {
+		$Nav->params = ['nav_limit'=>$Nav->limit, 'nav_offset'=>$Nav->page*$Nav->limit];
+		$Nav->query = 'SELECT rowid, * FROM ' .$DB->e($Tb->name()) .' LIMIT :nav_limit OFFSET :nav_offset';
+		$OpsNav = null; }
+
 	$Rnd->setHC($HC);
 	$Rnd->setTable($Tb);
-	$Rnd->setRecords($DB->queryFetchAll($Nav->query = 'SELECT rowid, * FROM ' .$DB->e($Tb->name()) .' LIMIT :nav_limit OFFSET :nav_offset', ['nav_limit'=>$Nav->limit, 'nav_offset'=>$Nav->page*$Nav->limit]));
+	$Rnd->setRecords($DB->queryFetchAll($Nav->query, $Nav->params));
 	$Rnd->setNav($Nav);
+	if ($OpsNav)
+		$Rnd->setOpsNav($OpsNav);
 	echo $Rnd->H();
 	echo '<hr>';
 	$a = $DB->queryFetchAll('SELECT * FROM sqlite_schema WHERE tbl_name = ?', [$Tb->name()]);

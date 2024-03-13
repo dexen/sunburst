@@ -4,13 +4,16 @@ class TabularNavigator
 {
 	public int $limit;
 	public int $page;
-	public ?string $query=null;
+	public ?string $query;
+	public array $sel;
+	public array $params;
 
-	function __construct(int $limit = 10, int $page = 0, string $query=null)
+	function __construct(int $limit = 10, int $page = 0, string $query=null, array $sel=[])
 	{
 		$this->limit = $limit;
 		$this->page = $page;
 		$this->query = $query;
+		$this->sel = $sel;
 	}
 }
 
@@ -144,11 +147,15 @@ class DataTableRender extends Renderer
 {
 	protected $Tb;
 	protected $a;
+	protected ?array $opsRecords = null;
 	protected $Nav;
+	protected $OpsNav;
 
 	function setTable(SQLiteTable $Tb) { $this->Tb = $Tb; }
 	function setRecords(array $a) { $this->a = $a; }
+	function setOpsRecords(array $a) { $this->opsRecords = $a; }
 	function setNav(TabularNavigator $Nav) { $this->Nav = $Nav; }
+	function setOpsNav(TabularNavigator $OpsNav) { $this->OpsNav = $OpsNav; }
 
 	protected
 	function navH() : string {
@@ -170,25 +177,83 @@ class DataTableRender extends Renderer
 		return $ret;
 	}
 
+	protected
+	function opsH() : string {
+		$ret = '';
+		$HC = $this->HC;
+
+		$ret .= '<fieldset>';
+
+		$ret .= '<button name="dialog" value="insert">Insert...</button>';
+		$ret .= ' | ';
+		$ret .= '<button name="ops" value="delete">Delete...</button>';
+
+		if ($this->OpsNav) {
+			$ret .= '<div>';
+			$nrows = max(3, count(explode("\n", $this->OpsNav->query))+1);
+			$ret .= '<label>Ops:<br>
+				<textarea style="width: 100%" rows="' .H($nrows) .'" name="opsquery">' .H($this->OpsNav->query) .'</textarea></label>';
+			if ($this->opsRecords === null)
+				$ret .= '<button name="ops" value="exec" type="submit" class="action-button-main action-button-dangerous"><span>Perform!</span></button>';
+			else {
+				$ret .= '<table class="records-listing"><thead>';
+				foreach ($this->opsRecords as $rcd) {
+					$ret .= '<tr>';
+					foreach ($rcd as $k => $v)
+						if (is_int($k))
+							;
+						else
+							$ret .= '<th>' .H($k) .'</th>';
+					$ret .= '</tr></thead><tbody>';
+					break; }
+				foreach ($this->opsRecords as $rcd) {
+					$ret .= '<tr>';
+					foreach ($rcd as $k => $v)
+						if (is_int($k))
+							;
+						else
+							$ret .= '<td>' .H($v) .'</td>';
+					$ret .= '</tr>';
+				}
+				$ret .= '</tbody></table>'; }
+			$ret .= '</div>';
+		}
+
+		$ret .= '</fieldset>';
+		return $ret;
+	}
+
 	function H() : string {
 		$ret = '';
 		$HC = $this->HC;
 
 		$ret .= $this->navH();
 
+		$ret .= '<form method="post" action="' .$HC .'">';
+
 		$ret .= '<table class="records-listing">';
 		$ret .= '<thead>' .$this->headerRowH() .'</thead>';
 		$ret .= '<tbody>';
 
 		foreach ($this->a as $rcd) {
+			if ($rcd['_checked']??null)
+				$cH = ' checked="checked"';
+			else
+				$cH = '';
 			$ret .= '<tr>';
 			if (array_key_exists('rowid', $rcd))
 				$ret .= '<th><a href="' .$HC('rowid', $rcd['rowid']) .'">edit...</a></th>';
+			if (array_key_exists('rowid', $rcd))
+				$ret .= '<th><label><input name="sel[rowid][]" value="' .H($rcd['rowid']) .'" type="checkbox" ' .$cH .'/> ' .H($rcd['rowid']) .'</label></th>';
 			foreach ($rcd as $k => $v)
 				$ret .= $this->fieldH($rcd, $k);
 			$ret .= '</tr>';
 		}
 		$ret .= '</tbody></table>';
+
+		$ret .= $this->opsH();
+		$ret .= '</form>';
+
 		return $ret;
 	}
 
@@ -221,6 +286,8 @@ class DataTableRender extends Renderer
 		foreach ($this->a as $rcd) {
 			if (array_key_exists('rowid', $rcd))
 				$ret .= '<th>#</th>';
+			if (array_key_exists('rowid', $rcd))
+				$ret .= '<th>[ ]</th>';
 			foreach ($rcd as $k => $v)
 				if (is_int($k))
 					;

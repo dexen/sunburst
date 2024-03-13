@@ -33,3 +33,10 @@ td.numeric {
 	width: 100%;
 	min-height: 4ex;
 }
+
+.action-button-dangerous > span {
+	border-left: 1.33ex solid red;
+	border-right: 1.33ex solid red;
+	padding-left: 1.66ex;
+	padding-right: 1.66ex;
+}
