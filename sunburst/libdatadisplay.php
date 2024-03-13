@@ -42,10 +42,8 @@ class DataRowEditorRenderer extends Renderer
 
 class DataROTableRenderer extends Renderer
 {
-	protected $Tb;
 	protected $a;
 
-	function setTable(SQLiteTable $Tb) { $this->Tb = $Tb; }
 	function setRecords(array $a) { $this->a = $a; }
 
 	function H() : string {
