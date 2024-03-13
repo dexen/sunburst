@@ -34,6 +34,11 @@ if ($In && ($_GET['table']??null)) {
 	$HC = $HC->with('table', $Tb); }
 else
 	$Tb = null;
+if ($In && ($_GET['view']??null)) {
+	$Vw = new SQLiteView($In, $_GET['view']);
+	$HC = $HC->with('view', $Vw); }
+else
+	$Vw = null;
 if ($Tb && ($_GET['rowid']??null)) {
 	$Rw = new SQLiteRow($Tb, $_GET['rowid']);
 	$HC = $HC->with('rowid', $Rw);
@@ -91,6 +96,30 @@ else if ($HC->has('table')) {
 	echo $Rnd->H();
 	echo '<hr>';
 	$a = $DB->queryFetchAll('SELECT * FROM sqlite_schema WHERE tbl_name = ?', [$Tb->name()]);
+	echo '<table class="records-listing"><tbody>';
+	foreach ($a as $rcd) {
+		if ($rcd['type'] !== 'index')
+			continue;
+		$aa = $DB->queryFetchAll('SELECT * FROM pragma_index_xinfo(?)', [$rcd['name']]);
+		$aaa = array_filter(array_column($aa, 'name'), fn($v)=>!is_null($v));
+		echo '<tr>
+			<td>' .H($rcd['type']) .':</td>
+			<td><a href="' .$HC('table', $rcd['tbl_name'], $rcd['type'], $rcd['name']) .'">' .H($rcd['name']) .'</a></td>
+			<td>' .H(implode(', ', $aaa)) .'</td>
+		</tr>'; }
+	echo '</tbody></table>';
+}
+else if ($HC->has('view')) {
+	$DB = $In->DB();
+
+	echo '<h1><a href="' .$HC->without('view') .'">&lt;--</a> Browsing view <a href="' .$HC .'">' .H($Vw->namePretty()) .'</a> in <a href="' .$HC->without('view') .'">' .H($In->namePretty()) .'</a></h1>';
+
+	$Rnd = new DataROTableRenderer();
+	$Rnd->setHC($HC);
+	$Rnd->setRecords($DB->queryFetchAll('SELECT * FROM ' .$DB->e($Vw->name())));
+	echo $Rnd->H();
+	echo '<hr>';
+	$a = $DB->queryFetchAll('SELECT * FROM sqlite_schema WHERE tbl_name = ?', [$Vw->name()]);
 	echo '<table class="records-listing"><tbody>';
 	foreach ($a as $rcd) {
 		if ($rcd['type'] !== 'index')
