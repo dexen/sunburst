@@ -93,7 +93,6 @@ else if ($HC->has('table')) {
 	$Rnd = new DataTableRender();
 	$Rnd->setHC($HC);
 	$Rnd->setTable($Tb);
-	$limit = 10;
 	$Rnd->setRecords($DB->queryFetchAll($Nav->query = 'SELECT rowid, * FROM ' .$DB->e($Tb->name()) .' LIMIT :nav_limit OFFSET :nav_offset', ['nav_limit'=>$Nav->limit, 'nav_offset'=>$Nav->page*$Nav->limit]));
 	$Rnd->setNav($Nav);
 	echo $Rnd->H();
