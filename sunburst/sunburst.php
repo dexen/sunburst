@@ -86,13 +86,16 @@ else if ($HC->has('index')) {
 }
 else if ($HC->has('table')) {
 	$DB = $In->DB();
+	$Nav = new TabularNavigator(limit: $_GET['nav']['limit']??3, page: $_GET['nav']['page']??0);
 
 	echo '<h1><a href="' .$HC->without('table') .'">&lt;--</a> Browsing table <a href="' .$HC .'">' .H($Tb->namePretty()) .'</a> in <a href="' .$HC->without('table') .'">' .H($In->namePretty()) .'</a></h1>';
 
 	$Rnd = new DataTableRender();
 	$Rnd->setHC($HC);
 	$Rnd->setTable($Tb);
-	$Rnd->setRecords($DB->queryFetchAll('SELECT rowid AS rowid, * FROM ' .$DB->e($Tb->name())));
+	$limit = 10;
+	$Rnd->setRecords($DB->queryFetchAll($Nav->query = 'SELECT rowid AS rowid, * FROM ' .$DB->e($Tb->name()) .' LIMIT ? OFFSET ?', [$Nav->limit, $Nav->page*$Nav->limit]));
+	$Rnd->setNav($Nav);
 	echo $Rnd->H();
 	echo '<hr>';
 	$a = $DB->queryFetchAll('SELECT * FROM sqlite_schema WHERE tbl_name = ?', [$Tb->name()]);

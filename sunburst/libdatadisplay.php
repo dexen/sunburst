@@ -1,5 +1,19 @@
 <?php
 
+class TabularNavigator
+{
+	public int $limit;
+	public int $page;
+	public ?string $query=null;
+
+	function __construct(int $limit = 3, int $page = 0, string $query=null)
+	{
+		$this->limit = $limit;
+		$this->page = $page;
+		$this->query = $query;
+	}
+}
+
 abstract class Renderer
 {
 	protected $HC;
@@ -108,13 +122,28 @@ class DataTableRender extends Renderer
 {
 	protected $Tb;
 	protected $a;
+	protected $Nav;
 
 	function setTable(SQLiteTable $Tb) { $this->Tb = $Tb; }
 	function setRecords(array $a) { $this->a = $a; }
+	function setNav(TabularNavigator $Nav) { $this->Nav = $Nav; }
 
 	function H() : string {
 		$ret = '';
 		$HC = $this->HC;
+
+		$ret .= '<form method="get">';
+		$ret .= $HC->asHiddenInputsH();
+		$ret .= '<fieldset>';
+		$ret .= '<textarea readonly style="width: 100%">' .H($this->Nav->query) .'</textarea>';
+		$ret .= '<label>Limit: <input name="nav[limit]" value="' .H($this->Nav->limit) .'" size="3"/></label>';
+		$ret .= '<label>Page: <input name="nav[page]" value="' .H($this->Nav->page) .'" size="3"/></label>';
+		$ret .= '<button type="submit">Navigate</button>';
+		$ret .= ' <button type="submit" name="nav[page]" value="' .H($this->Nav->page-1) .'">&lt;--</button> ';
+		$ret .= ' <button type="submit" name="nav[page]" value="' .H($this->Nav->page+1) .'">--&gt;</button>';
+
+		$ret .= '</fieldset>';
+		$ret .= '</form>';
 
 		$ret .= '<table class="records-listing">';
 		$ret .= '<thead>' .$this->headerRowH() .'</thead>';

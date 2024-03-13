@@ -66,4 +66,19 @@ class HCtx {
 	function __invoke(...$a) {
 		return $this->with(...$a);
 	}
+
+	function asHiddenInputsH() : string {
+		$a = [];
+		foreach ($this->a as $key => $value) {
+			if (is_string($value))
+				$selector = $value;
+			else if (is_int($value))
+				$selector = $value;
+			else if ($value instanceof HCtxProvider)
+				$selector = $value->hctxSelector();
+			else
+				throw new \Exception(sprintf('unhandled value type "%s" for key "%s"', gettype($value), $key));
+			$a[] = '<input type="hidden" name="' .H($key) .'" value="' .H($selector) .'"/>'; }
+		return implode($a);
+	}
 }
