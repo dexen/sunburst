@@ -72,7 +72,7 @@ if ($HC->has('rowid')) {
 	$Rnd = new DataRowEditorRenderer();
 	$Rnd->setHC($HC);
 	$Rnd->setRow($Rw);
-	$Rnd->setRecord($a = $DB->queryFetchOne('SELECT rowid, * FROM ' .$DB->e($Tb->name()). ' WHERE rowid = ?', [$Rw->rowid()]));
+	$Rnd->setRecord($a = $DB->queryFetchOne('SELECT rowid AS rowid, * FROM ' .$DB->e($Tb->name()). ' WHERE rowid = ?', [$Rw->rowid()]));
 	echo $Rnd->H();
 }
 else if ($HC->has('index')) {
@@ -96,7 +96,7 @@ else if ($HC->has('table')) {
 
 	if ($ops === 'exec') {
 		$Nav->params = ['nav_limit'=>$Nav->limit, 'nav_offset'=>$Nav->page*$Nav->limit];
-		$Nav->query = 'SELECT rowid, * FROM ' .$DB->e($Tb->name()) .' LIMIT :nav_limit OFFSET :nav_offset';
+		$Nav->query = 'SELECT rowid AS rowid, * FROM ' .$DB->e($Tb->name()) .' LIMIT :nav_limit OFFSET :nav_offset';
 		$OpsNav = new TabularNavigator;
 		$OpsNav->query = $_POST['opsquery'];
 		$OpsNav->params = $_POST['sel']['rowid']??[];
@@ -104,13 +104,13 @@ else if ($HC->has('table')) {
 	else if ($ops === 'delete') {
 		$Nav->params = $Nav->sel;
 			# FIXME - check the "_checked" field name for naming conflicts
-		$Nav->query = 'SELECT rowid, 1 AS _checked, * FROM ' .$DB->e($Tb->name()) .' WHERE rowid IN (' .$DB->sqlParametersPlaceholders($Nav->params) .')';
+		$Nav->query = 'SELECT rowid AS rowid, 1 AS _checked, * FROM ' .$DB->e($Tb->name()) .' WHERE rowid IN (' .$DB->sqlParametersPlaceholders($Nav->params) .')';
 
 		$OpsNav = clone $Nav;
 		$OpsNav->query = 'DELETE FROM ' .$DB->e($Tb->name()) .' WHERE rowid IN (' .$DB->sqlParametersPlaceholders($OpsNav->params) .') RETURNING rowid AS _deleted'; }
 	else {
 		$Nav->params = ['nav_limit'=>$Nav->limit, 'nav_offset'=>$Nav->page*$Nav->limit];
-		$Nav->query = 'SELECT rowid, * FROM ' .$DB->e($Tb->name()) .' LIMIT :nav_limit OFFSET :nav_offset';
+		$Nav->query = 'SELECT rowid AS rowid, * FROM ' .$DB->e($Tb->name()) .' LIMIT :nav_limit OFFSET :nav_offset';
 		$OpsNav = null; }
 
 	$Rnd->setHC($HC);
