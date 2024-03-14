@@ -7,14 +7,12 @@ require __DIR__ .'/' .'lib.php';
 require __DIR__ .'/' .'libdb.php';
 require __DIR__ .'/' .'libdatadisplay.php';
 
-?>
+echo '
 <!DOCTYPE html>
 <html>
-<head>
-<style><?= Hcdata(file_get_contents(__DIR__ .'/' .'style.css')) ?></style>
-</head>
-<body>
-<?php
+<head><style>' .Hcdata(file_get_contents(__DIR__ .'/' .'style.css')) .'</style></head>
+<body>';
+
 
 $HC = new HCtx();
 
