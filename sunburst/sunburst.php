@@ -121,16 +121,31 @@ else if ($HC->has('table')) {
 		$Rnd->setOpsNav($OpsNav);
 	echo $Rnd->H();
 	echo '<hr>';
-	$a = $DB->queryFetchAll('SELECT * FROM sqlite_schema WHERE tbl_name = ?', [$Tb->name()]);
-	echo '<table class="records-listing index-structure"><tbody>';
+	$a = $DB->queryFetchAll('SELECT * FROM pragma_index_list(?)', [$Tb->name()]);
+	echo '<table class="records-listing index-structure"><thead>';
 	foreach ($a as $rcd) {
-		if ($rcd['type'] !== 'index')
-			continue;
+		echo '<tr>';
+			foreach ($rcd as $k=>$v)
+				if (is_int($k))
+					;
+				else
+					echo '<th>' .H($k) .'</th>';
+			echo '<th>columns</th>';
+		echo '</tr>';
+		break; }
+	echo '</thead><tbody>';
+	foreach ($a as $rcd) {
 		$aa = $DB->queryFetchAll('SELECT * FROM pragma_index_xinfo(?)', [$rcd['name']]);
 		$aaa = array_filter(array_column($aa, 'name'), fn($v)=>!is_null($v));
-		echo '<tr>
-			<td>' .H($rcd['type']) .':</td>
-			<td><a href="' .$HC('table', $rcd['tbl_name'], $rcd['type'], $rcd['name']) .'">' .H($rcd['name']) .'</a></td>
+		echo '<tr>';
+			foreach ($rcd as $k=>$v)
+				if (is_int($k))
+					;
+				else
+					echo '<td>' .(($v===NULL)?'<em>NULL</em>' : H($v)) .'</td>';
+#		echo '
+#			<td><a href="' .$HC('table', $rcd['tbl_name'], $rcd['type'], $rcd['name']) .'">' .H($rcd['name']) .'</a></td>';
+		echo '
 			<td>' .H(implode(', ', $aaa)) .'</td>
 		</tr>'; }
 	echo '</tbody></table>';
