@@ -134,6 +134,32 @@ else if ($HC->has('table')) {
 			<td>' .H(implode(', ', $aaa)) .'</td>
 		</tr>'; }
 	echo '</tbody></table>';
+
+	echo '<hr>';
+	$sql = $DB->queryFetchOne('SELECT * FROM sqlite_schema WHERE name= ?', [$Tb->name()])['sql'];
+	$rows = count(explode("\n", $sql));
+	echo '<textarea style="width: 100%" rows="' .H($rows) .'">' .H($sql) .'</textarea>';
+	$a = $DB->queryFetchAll('SELECT * FROM pragma_table_xinfo(?)', [$Tb->name()]);
+	echo '<table class="records-listing table-structure"><thead>';
+	foreach ($a as $rcd) {
+		echo '<tr>';
+			foreach ($rcd as $k=>$v)
+				if (is_int($k))
+					;
+				else
+					echo '<th>' .H($k) .'</th>';
+		echo '</tr>';
+		break; }
+	echo '</thead><tbody>';
+	foreach ($a as $rcd) {
+		echo '<tr>';
+			foreach ($rcd as $k=>$v)
+				if (is_int($k))
+					;
+				else
+					echo '<td>' .(($v===NULL)?'<em>NULL</em>' : H($v)) .'</td>';
+		echo '</tr>'; }
+	echo '</tbody></table>';
 }
 else if ($HC->has('view')) {
 	$DB = $In->DB();
