@@ -160,20 +160,24 @@ else if ($HC->has('view')) {
 	echo '</tbody></table>';
 }
 else if ($HC->has('query')) {
+	$Nav = new TabularNavigator(limit: $_GET['nav']['limit']??10, page: $_GET['nav']['page']??0,
+		sel: $_POST['sel']['rowid']??[] );
+	$Nav->query = $Qr->sql();
+
 	echo '<h1>Editing freehand query in <a href="' .$HC->without('query') .'">' .H($In->namePretty()) .'</a></h1>';
 
 	echo '<form method="post" action="' .$HC->with('query', 'freehand') .'">';
-		$sql = $Qr->sql();
 		$DB = $In->DB();
 
-		$rows = max(5, count(explode("\n", $sql)));
-		echo '<textarea name="sql" style="width: 100%" rows="' .H($rows) .'">' .H($sql) .'</textarea>';
+		$rows = max(5, count(explode("\n", $Nav->query)));
+		echo '<textarea name="sql" style="width: 100%" rows="' .H($rows) .'">' .H($Nav->query) .'</textarea>';
 		echo '<button type="submit" name="action" value="execute-sql" class="action-button-main">execute SQL</button>';
 	echo '</form>';
 
 	$Rnd = new DataTableRender();
-	$Rnd->setRecords($DB->queryFetchAll($sql));
+	$Rnd->setRecords($DB->queryFetchAll($Nav->query));
 	$Rnd->setHC($HC);
+	$Rnd->setNav($Nav);
 	echo $Rnd->H();
 }
 else if ($HC->has('db')) {
