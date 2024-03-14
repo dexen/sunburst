@@ -3,6 +3,12 @@
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', true);
 
+function sunburst_basic_safety(){
+	if (time() > (filemtime(__FILE__)+(1*24*3600)))
+		throw new \Exception('expired!');
+};
+sunburst_basic_safety();
+
 require __DIR__ .'/' .'lib.php';
 require __DIR__ .'/' .'libdb.php';
 require __DIR__ .'/' .'libdatadisplay.php';
