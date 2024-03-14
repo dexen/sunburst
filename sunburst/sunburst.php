@@ -122,7 +122,7 @@ else if ($HC->has('table')) {
 	echo $Rnd->H();
 	echo '<hr>';
 	$a = $DB->queryFetchAll('SELECT * FROM sqlite_schema WHERE tbl_name = ?', [$Tb->name()]);
-	echo '<table class="records-listing"><tbody>';
+	echo '<table class="records-listing index-structure"><tbody>';
 	foreach ($a as $rcd) {
 		if ($rcd['type'] !== 'index')
 			continue;
