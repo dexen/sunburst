@@ -3,9 +3,22 @@
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', true);
 
+function sunburst_require_localhost() {
+	$remote = $_SERVER['REMOTE_ADDR']??null;
+	if ($remote !== '127.0.0.1')
+		throw new \Exception('expected localhost access');
+	$server = $_SERVER['SERVER_NAME']??null;
+	if ($server !== 'localhost')
+		throw new \Exception('expected localhost access');
+	$port = $_SERVER['SERVER_PORT']??null;
+	if (!($port>=1024))
+		throw new \Exception('expected localhost access');
+}
+
 function sunburst_basic_safety(){
 	if (time() > (filemtime(__FILE__)+(1*24*3600)))
 		throw new \Exception('expired!');
+	sunburst_require_localhost();
 };
 sunburst_basic_safety();
 
