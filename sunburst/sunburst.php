@@ -45,6 +45,8 @@ if ($In && ($_GET['query']??null)) {
 	$Qr = new SQLiteQuery($In, $_POST['sql']);
 	$HC = $HC->with('query', $Qr);
 }
+else
+	$Qr = null;
 
 if ($In && ($_GET['table']??null)) {
 	$Tb = new SQLiteTable($In, $_GET['table']);
@@ -225,15 +227,15 @@ else if ($HC->has('query')) {
 	echo '<h1>Editing freehand query in <a href="' .$HC->without('query') .'">' .H($In->namePretty()) .'</a></h1>';
 
 	echo '<form method="post" action="' .$HC->with('query', 'freehand') .'">';
-	echo '<label>Freehand SQL:<br>';
-		$DB = $In->DB();
-
+		echo '<label>Freehand SQL:<br>';
 		$rows = max(5, count(explode("\n", $Nav->query)));
 		echo '<textarea name="sql" style="width: 100%" rows="' .H($rows) .'">' .H($Nav->query) .'</textarea>';
 	echo '</label>';
 		echo '<button type="submit" name="action" value="execute-sql" class="action-button-main">Execute SQL</button>';
 	echo '</fieldset>';
 	echo '</form>';
+
+	$DB = $In->DB();
 
 	$Rnd = new DataTableRender();
 	$Rnd->setRecords($DB->queryFetchAll($Nav->query));
@@ -279,12 +281,14 @@ else if ($HC->has('db')) {
 	echo '</tbody></table>';
 
 	echo '<hr>';
+	$Nav = new TabularNavigator(limit: $_GET['nav']['limit']??10, page: $_GET['nav']['page']??0,
+		sel: $_POST['sel']['rowid']??[] );
+	$Nav->query = '';
 
 	echo '<form method="post" action="' .$HC->with('query', 'freehand') .'">';
 		echo '<label>Freehand SQL:<br>';
-		$sql = $_POST['sql'] ?? '';
-		$rows = max(5, count(explode("\n", $sql)));
-		echo '<textarea name="sql" style="width: 100%" rows="' .H($rows) .'">' .H($sql) .'</textarea>';
+		$rows = max(5, count(explode("\n", $Nav->query)));
+		echo '<textarea name="sql" style="width: 100%" rows="' .H($rows) .'">' .H($Nav->query) .'</textarea>';
 		echo '</label>';
 		echo '<button type="submit" name="action" value="execute-sql" class="action-button-main">Execute SQL</button>';
 	echo '</form>';
