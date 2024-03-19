@@ -225,11 +225,14 @@ else if ($HC->has('query')) {
 	echo '<h1>Editing freehand query in <a href="' .$HC->without('query') .'">' .H($In->namePretty()) .'</a></h1>';
 
 	echo '<form method="post" action="' .$HC->with('query', 'freehand') .'">';
+	echo '<label>Freehand SQL:<br>';
 		$DB = $In->DB();
 
 		$rows = max(5, count(explode("\n", $Nav->query)));
 		echo '<textarea name="sql" style="width: 100%" rows="' .H($rows) .'">' .H($Nav->query) .'</textarea>';
-		echo '<button type="submit" name="action" value="execute-sql" class="action-button-main">execute SQL</button>';
+	echo '</label>';
+		echo '<button type="submit" name="action" value="execute-sql" class="action-button-main">Execute SQL</button>';
+	echo '</fieldset>';
 	echo '</form>';
 
 	$Rnd = new DataTableRender();
@@ -278,10 +281,12 @@ else if ($HC->has('db')) {
 	echo '<hr>';
 
 	echo '<form method="post" action="' .$HC->with('query', 'freehand') .'">';
+		echo '<label>Freehand SQL:<br>';
 		$sql = $_POST['sql'] ?? '';
 		$rows = max(5, count(explode("\n", $sql)));
 		echo '<textarea name="sql" style="width: 100%" rows="' .H($rows) .'">' .H($sql) .'</textarea>';
-		echo '<button type="submit" name="action" value="execute-sql" class="action-button-main">execute SQL</button>';
+		echo '</label>';
+		echo '<button type="submit" name="action" value="execute-sql" class="action-button-main">Execute SQL</button>';
 	echo '</form>';
 }
 else {
